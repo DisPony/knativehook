@@ -1,8 +1,13 @@
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.runBlocking
+import org.jnativehook.GlobalScreen
+import org.jnativehook.keyboard.NativeKeyAdapter
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
-import java.lang.annotation.Native
 
 class KeyExtension(capacity: Int = Channel.BUFFERED) : NativeKeyListener {
 
@@ -32,4 +37,37 @@ class KeyProvider(private val listener: KeyExtension) {
 
     suspend fun getKeyRelease(): NativeKeyEvent = listener.keyReleasedChannel.receive()
 
+}
+
+@ExperimentalCoroutinesApi
+fun keyTypesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+    val listener = object : NativeKeyAdapter() {
+        override fun nativeKeyTyped(e: NativeKeyEvent) {
+            offer(e)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(listener)
+    awaitClose { GlobalScreen.removeNativeKeyListener(listener) }
+}
+
+@ExperimentalCoroutinesApi
+fun keyPressesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+    val listener = object : NativeKeyAdapter() {
+        override fun nativeKeyPressed(e: NativeKeyEvent) {
+            offer(e)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(listener)
+    awaitClose { GlobalScreen.removeNativeKeyListener(listener) }
+}
+
+@ExperimentalCoroutinesApi
+fun keyReleasesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+    val listener = object : NativeKeyAdapter() {
+        override fun nativeKeyReleased(e: NativeKeyEvent) {
+            offer(e)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(listener)
+    awaitClose { GlobalScreen.removeNativeKeyListener(listener) }
 }
