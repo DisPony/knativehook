@@ -31,6 +31,9 @@ class KeyExtension(capacity: Int = Channel.BUFFERED) : NativeKeyListener {
 
 class KeyProvider(private val listener: KeyExtension) {
 
+    /*
+    For some reason doesn't work on my system
+     */
     suspend fun getKeyType(): NativeKeyEvent = listener.keyTypedChannel.receive()
 
     suspend fun getKeyPress(): NativeKeyEvent = listener.keyPressedChannel.receive()
@@ -39,6 +42,10 @@ class KeyProvider(private val listener: KeyExtension) {
 
 }
 
+
+/*
+For some reason doesn't work on my system
+ */
 @ExperimentalCoroutinesApi
 fun keyTypesFlow(): Flow<NativeKeyEvent> = callbackFlow {
     val listener = object : NativeKeyAdapter() {
