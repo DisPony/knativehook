@@ -39,7 +39,7 @@ suspend fun NativeEvents.Companion.getMouseMove(): NativeMouseEvent = suspendCor
     val callback = object : NativeMouseMotionAdapter() {
         override fun nativeMouseMoved(e: NativeMouseEvent) {
             cont.resume(e)
-            GlobalScreen.addNativeMouseMotionListener(this)
+            GlobalScreen.removeNativeMouseMotionListener(this)
         }
     }
     GlobalScreen.addNativeMouseMotionListener(callback)
@@ -49,7 +49,7 @@ suspend fun NativeEvents.Companion.getMouseDrag(): NativeMouseEvent = suspendCor
     val callback = object : NativeMouseMotionAdapter() {
         override fun nativeMouseDragged(e: NativeMouseEvent) {
             cont.resume(e)
-            GlobalScreen.addNativeMouseMotionListener(this)
+            GlobalScreen.removeNativeMouseMotionListener(this)
         }
     }
     GlobalScreen.addNativeMouseMotionListener(callback)
