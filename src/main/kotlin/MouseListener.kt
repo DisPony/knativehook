@@ -1,3 +1,4 @@
+import events.NativeEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -40,7 +41,7 @@ class MouseProvider(private val listener: MouseExtension) {
 }
 
 @ExperimentalCoroutinesApi
-fun mousePressesFlow(): Flow<NativeMouseEvent> = callbackFlow {
+fun NativeEvents.Companion.mousePresses(): Flow<NativeMouseEvent> = callbackFlow {
     val listener = object : NativeMouseAdapter() {
         override fun nativeMousePressed(e: NativeMouseEvent) {
             offer(e)
@@ -51,7 +52,7 @@ fun mousePressesFlow(): Flow<NativeMouseEvent> = callbackFlow {
 }
 
 @ExperimentalCoroutinesApi
-fun mouseClicksFlow(): Flow<NativeMouseEvent> = callbackFlow {
+fun NativeEvents.Companion.mouseClicks(): Flow<NativeMouseEvent> = callbackFlow {
     val listener = object : NativeMouseAdapter() {
         override fun nativeMouseClicked(e: NativeMouseEvent) {
             offer(e)
@@ -62,7 +63,7 @@ fun mouseClicksFlow(): Flow<NativeMouseEvent> = callbackFlow {
 }
 
 @ExperimentalCoroutinesApi
-fun mouseReleasesFlow(): Flow<NativeMouseEvent> = callbackFlow {
+fun NativeEvents.Companion.mouseReleases(): Flow<NativeMouseEvent> = callbackFlow {
     val listener = object : NativeMouseAdapter() {
         override fun nativeMouseClicked(e: NativeMouseEvent) {
             offer(e)

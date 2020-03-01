@@ -5,6 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
+import events.NativeEvents
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -16,10 +17,10 @@ import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 enum class Event(private val flowFactory: () -> Flow<NativeInputEvent>) {
-    KEY_PRESS(::keyPressesFlow), KEY_TYPE(::keyTypesFlow), KEY_RELEASE(::keyReleasesFlow),
-    MOUSE_PRESS(::mousePressesFlow), MOUSE_CLICK(::mouseClicksFlow), MOUSE_RELEASE(::mouseReleasesFlow),
-    MOUSE_MOVE(::mouseMovesFlow), MOUSE_DRAG(::mouseDragsFlow),
-    MOUSE_WHEEL(::mouseWheelsFlow);
+    KEY_PRESS(NativeEvents::keyPresses), KEY_TYPE(NativeEvents::keyTypes), KEY_RELEASE(NativeEvents::keyReleases),
+    MOUSE_PRESS(NativeEvents::mousePresses), MOUSE_CLICK(NativeEvents::mouseClicks), MOUSE_RELEASE(NativeEvents::mouseReleases),
+    MOUSE_MOVE(NativeEvents::mouseMoves), MOUSE_DRAG(NativeEvents::mouseDrags),
+    MOUSE_WHEEL(NativeEvents::mouseWheels);
 
     fun flow(): Flow<NativeInputEvent> = flowFactory()
 }

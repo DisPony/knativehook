@@ -1,3 +1,4 @@
+import events.NativeEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -47,7 +48,7 @@ class KeyProvider(private val listener: KeyExtension) {
 For some reason doesn't work on my system
  */
 @ExperimentalCoroutinesApi
-fun keyTypesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+fun NativeEvents.Companion.keyTypes(): Flow<NativeKeyEvent> = callbackFlow {
     val listener = object : NativeKeyAdapter() {
         override fun nativeKeyTyped(e: NativeKeyEvent) {
             offer(e)
@@ -58,7 +59,7 @@ fun keyTypesFlow(): Flow<NativeKeyEvent> = callbackFlow {
 }
 
 @ExperimentalCoroutinesApi
-fun keyPressesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+fun NativeEvents.Companion.keyPresses(): Flow<NativeKeyEvent> = callbackFlow {
     val listener = object : NativeKeyAdapter() {
         override fun nativeKeyPressed(e: NativeKeyEvent) {
             offer(e)
@@ -69,7 +70,7 @@ fun keyPressesFlow(): Flow<NativeKeyEvent> = callbackFlow {
 }
 
 @ExperimentalCoroutinesApi
-fun keyReleasesFlow(): Flow<NativeKeyEvent> = callbackFlow {
+fun NativeEvents.Companion.keyReleases(): Flow<NativeKeyEvent> = callbackFlow {
     val listener = object : NativeKeyAdapter() {
         override fun nativeKeyReleased(e: NativeKeyEvent) {
             offer(e)

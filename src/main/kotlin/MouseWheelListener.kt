@@ -1,3 +1,4 @@
+import events.NativeEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -25,7 +26,7 @@ class MouseWheelProvider(private val listener: MouseWheelExtension) {
 }
 
 @ExperimentalCoroutinesApi
-fun mouseWheelsFlow(): Flow<NativeMouseWheelEvent> = callbackFlow {
+fun NativeEvents.Companion.mouseWheels(): Flow<NativeMouseWheelEvent> = callbackFlow {
     val listener = object : NativeMouseWheelListener {
         override fun nativeMouseWheelMoved(e: NativeMouseWheelEvent) {
             offer(e)
