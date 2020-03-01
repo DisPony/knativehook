@@ -9,6 +9,8 @@ import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyAdapter
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class KeyExtension(capacity: Int = Channel.BUFFERED) : NativeKeyListener {
 
@@ -41,6 +43,37 @@ class KeyProvider(private val listener: KeyExtension) {
 
     suspend fun getKeyRelease(): NativeKeyEvent = listener.keyReleasedChannel.receive()
 
+}
+
+
+suspend fun NativeEvents.Companion.getKeyType(): NativeKeyEvent = suspendCoroutine { cont ->
+    val callback = object : NativeKeyAdapter() {
+        override fun nativeKeyTyped(e: NativeKeyEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeKeyListener(this)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(callback)
+}
+
+suspend fun NativeEvents.Companion.getKeyPress(): NativeKeyEvent = suspendCoroutine { cont ->
+    val callback = object : NativeKeyAdapter() {
+        override fun nativeKeyPressed(e: NativeKeyEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeKeyListener(this)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(callback)
+}
+
+suspend fun NativeEvents.Companion.getKeyRelease(): NativeKeyEvent = suspendCoroutine { cont ->
+    val callback = object : NativeKeyAdapter() {
+        override fun nativeKeyReleased(e: NativeKeyEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeKeyListener(this)
+        }
+    }
+    GlobalScreen.addNativeKeyListener(callback)
 }
 
 
