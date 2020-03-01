@@ -45,7 +45,9 @@ class KeyProvider(private val listener: KeyExtension) {
 
 }
 
-
+/*
+For some reason doesn't work on my system
+ */
 suspend fun NativeEvents.Companion.getKeyType(): NativeKeyEvent = suspendCoroutine { cont ->
     val callback = object : NativeKeyAdapter() {
         override fun nativeKeyTyped(e: NativeKeyEvent) {

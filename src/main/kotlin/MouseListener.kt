@@ -9,6 +9,8 @@ import org.jnativehook.GlobalScreen
 import org.jnativehook.mouse.NativeMouseAdapter
 import org.jnativehook.mouse.NativeMouseEvent
 import org.jnativehook.mouse.NativeMouseListener
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MouseExtension(capacity: Int = Channel.BUFFERED) : NativeMouseListener {
 
@@ -38,6 +40,36 @@ class MouseProvider(private val listener: MouseExtension) {
 
     suspend fun getMouseRelease() = listener.mouseReleasedChannel.receive()
 
+}
+
+suspend fun NativeEvents.Companion.getMousePress(): NativeMouseEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseAdapter() {
+        override fun nativeMousePressed(e: NativeMouseEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeMouseListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseListener(callback)
+}
+
+suspend fun NativeEvents.Companion.getMouseClick(): NativeMouseEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseAdapter() {
+        override fun nativeMouseClicked(e: NativeMouseEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeMouseListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseListener(callback)
+}
+
+suspend fun NativeEvents.Companion.getMouseRelease(): NativeMouseEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseAdapter() {
+        override fun nativeMouseReleased(e: NativeMouseEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeMouseListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseListener(callback)
 }
 
 @ExperimentalCoroutinesApi
