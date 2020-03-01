@@ -8,6 +8,8 @@ import kotlinx.coroutines.runBlocking
 import org.jnativehook.GlobalScreen
 import org.jnativehook.mouse.NativeMouseWheelEvent
 import org.jnativehook.mouse.NativeMouseWheelListener
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MouseWheelExtension(capacity: Int = Channel.BUFFERED): NativeMouseWheelListener {
 
@@ -23,6 +25,16 @@ class MouseWheelProvider(private val listener: MouseWheelExtension) {
 
     suspend fun getMouseWheel(): NativeMouseWheelEvent = listener.mouseWheelChannel.receive()
 
+}
+
+suspend fun NativeEvents.Companion.getMouseWheel(): NativeMouseWheelEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseWheelListener {
+        override fun nativeMouseWheelMoved(e: NativeMouseWheelEvent) {
+            cont.resume(e)
+            GlobalScreen.removeNativeMouseWheelListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseWheelListener(callback)
 }
 
 @ExperimentalCoroutinesApi
