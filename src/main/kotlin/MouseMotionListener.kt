@@ -9,6 +9,8 @@ import org.jnativehook.GlobalScreen
 import org.jnativehook.mouse.NativeMouseEvent
 import org.jnativehook.mouse.NativeMouseMotionAdapter
 import org.jnativehook.mouse.NativeMouseMotionListener
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MouseMotionExtension(capacity: Int = Channel.BUFFERED): NativeMouseMotionListener {
 
@@ -31,6 +33,26 @@ class MouseMotionProvider(private val listener: MouseMotionExtension) {
 
     suspend fun getMouseDrag(): NativeMouseEvent = listener.mouseDraggedChannel.receive()
 
+}
+
+suspend fun NativeEvents.Companion.getMouseMove(): NativeMouseEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseMotionAdapter() {
+        override fun nativeMouseMoved(e: NativeMouseEvent) {
+            cont.resume(e)
+            GlobalScreen.addNativeMouseMotionListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseMotionListener(callback)
+}
+
+suspend fun NativeEvents.Companion.getMouseDrag(): NativeMouseEvent = suspendCoroutine { cont ->
+    val callback = object : NativeMouseMotionAdapter() {
+        override fun nativeMouseDragged(e: NativeMouseEvent) {
+            cont.resume(e)
+            GlobalScreen.addNativeMouseMotionListener(this)
+        }
+    }
+    GlobalScreen.addNativeMouseMotionListener(callback)
 }
 
 @ExperimentalCoroutinesApi
